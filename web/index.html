@@ -1,22 +1,94 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8" />
-    <title>Outlook Add-in</title>
-    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
-  </head>
-  <body>
-    <h2>My Outlook Add-in</h2>
-    <button id="run">Log subject</button>
-
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <title>CEQUENS Email Webhook</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        button {
+            padding: 8px 16px;
+            background-color: #0078d4;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #005a9e;
+        }
+    </style>
     <script>
-      Office.onReady(() => {
-        document.getElementById("run").onclick = () => {
-          const item = Office.context.mailbox.item;
-          console.log("Subject:", item.subject);
-          alert("Subject: " + item.subject);
-        };
-      });
+        Office.onReady(function() {
+            document.getElementById("sendButton").onclick = sendToWebhook;
+        });
+
+        function sendToWebhook() {
+            const item = Office.context.mailbox.item;
+            
+            // Get email subject
+            item.subject.getAsync(function(resultSubject) {
+                if (resultSubject.status === Office.AsyncResultStatus.Succeeded) {
+                    const subject = resultSubject.value || "(No subject)";
+                    
+                    // Get email body
+                    item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
+                        if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
+                            const body = resultBody.value || "(No body)";
+                            
+                            // Create email data object
+                            const emailData = {
+                                subject: subject,
+                                body: body,
+                                from: Office.context.mailbox.userProfile.emailAddress,
+                                timestamp: new Date().toISOString()
+                            };
+                            
+                            // Send to webhook
+                            fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(emailData)
+                            })
+                            .then(function(response) {
+                                if (!response.ok) {
+                                    throw new Error('Network response was not ok');
+                                }
+                                return response.json();
+                            })
+                            .then(function(data) {
+                                document.getElementById("result").textContent = "Email sent to webhook successfully!";
+                                document.getElementById("result").style.color = "green";
+                            })
+                            .catch(function(error) {
+                                document.getElementById("result").textContent = "Error: " + error.message;
+                                document.getElementById("result").style.color = "red";
+                                console.error('Error sending to webhook:', error);
+                            });
+                        } else {
+                            document.getElementById("result").textContent = "Error getting email body";
+                            document.getElementById("result").style.color = "red";
+                        }
+                    });
+                } else {
+                    document.getElementById("result").textContent = "Error getting email subject";
+                    document.getElementById("result").style.color = "red";
+                }
+            });
+        }
     </script>
-  </body>
+</head>
+<body>
+    <h2>CEQUENS Email Webhook</h2>
+    <p>Send your email to the webhook server for processing.</p>
+    <button id="sendButton">Send to Webhook</button>
+    <p id="result"></p>
+</body>
 </html>

@@ -1,0 +1,46 @@
+# SYSTEM INFORMATION
+Operating System: Windows_NT 10.0.22621
+Default Shell: C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe
+Home Directory: C:\Users\a.elhoseiny
+Current Working Directory: c:\Users\a.elhoseiny\OneDrive - CEQUENS\Desktop\tests\outlook\outlookaddin
+Platform: win32
+Architecture: x64
+Node Version: v22.17.0
+Total Memory: 16GB
+Free Memory: 4GB
+CPU Cores: 12
+
+Current Time: 9/9/2025, 5:29:24 PM (Africa/Cairo, UTC+3:00)
+
+# EDITOR STATE
+
+Visible Files:
+  manifest.xml
+
+Open Tabs:
+  manifest.xml
+  web\taskpane.html
+  server.js
+
+# WORKSPACE SUMMARY
+
+Important Project Files:
+  package.json
+  .gitignore
+
+Files:
+  package.json
+  .gitignore
+  assets/
+  manifest.xml
+  package-lock.json
+  server.js
+  web/
+  assets/icon-128.png
+  assets/icon-16.png
+  assets/icon-32.png
+  assets/icon-64.png
+  assets/icon-80.png
+  assets/logo-filled.png
+  web/index.html
+  web/taskpane.html

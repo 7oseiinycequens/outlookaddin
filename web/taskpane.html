@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Outlook Add-in - Compose</title>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      button {
+        padding: 8px 16px;
+        background-color: #0078d4;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      button:hover {
+        background-color: #005a9e;
+      }
+      #status {
+        margin-top: 20px;
+        padding: 10px;
+        border-radius: 4px;
+      }
+      .success {
+        background-color: #dff6dd;
+        color: #107c10;
+      }
+      .error {
+        background-color: #fde7e9;
+        color: #a80000;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>CEQUENS Email Webhook</h2>
+    <p>Send your email to the webhook server for processing.</p>
+    <button id="sendToWebhook">Send to Webhook</button>
+    <div id="status" style="display: none;"></div>
+
+    <script>
+      // Initialize Office JS
+      Office.onReady(() => {
+        // Add click event to the button
+        document.getElementById("sendToWebhook").onclick = sendEmailToWebhookFromTaskpane;
+      });
+
+      // Function to send email to webhook from taskpane
+      function sendEmailToWebhookFromTaskpane() {
+        const item = Office.context.mailbox.item;
+        const statusDiv = document.getElementById("status");
+        
+        // Get email subject
+        item.subject.getAsync((resultSubject) => {
+          if (resultSubject.status === Office.AsyncResultStatus.Succeeded) {
+            const subject = resultSubject.value || "(No subject)";
+            
+            // Get email body
+            item.body.getAsync(Office.CoercionType.Text, (resultBody) => {
+              if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
+                const body = resultBody.value || "(No body)";
+                
+                // Get recipients
+                item.to.getAsync((resultTo) => {
+                  const recipients = resultTo.status === Office.AsyncResultStatus.Succeeded 
+                    ? resultTo.value.map(r => r.emailAddress).join(';') 
+                    : "";
+                  
+                  // Create email data object
+                  const emailData = {
+                    subject: subject,
+                    body: body,
+                    to: recipients,
+                    from: Office.context.mailbox.userProfile.emailAddress,
+                    timestamp: new Date().toISOString()
+                  };
+                  
+                  // Send to webhook
+                  fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(emailData)
+                  })
+                  .then(response => {
+                    if (!response.ok) {
+                      throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                  })
+                  .then(data => {
+                    // Show success message
+                    statusDiv.textContent = "Email successfully sent to webhook!";
+                    statusDiv.className = "success";
+                    statusDiv.style.display = "block";
+                  })
+                  .catch(error => {
+                    // Show error message
+                    statusDiv.textContent = "Error sending to webhook: " + error.message;
+                    statusDiv.className = "error";
+                    statusDiv.style.display = "block";
+                    console.error('Error:', error);
+                  });
+                });
+              } else {
+                // Handle error getting body
+                statusDiv.textContent = "Error getting email body: " + resultBody.error.message;
+                statusDiv.className = "error";
+                statusDiv.style.display = "block";
+              }
+            });
+          } else {
+            // Handle error getting subject
+            statusDiv.textContent = "Error getting email subject: " + resultSubject.error.message;
+            statusDiv.className = "error";
+            statusDiv.style.display = "block";
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

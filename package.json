@@ -7,6 +7,7 @@
     "validate": "office-toolbox validate -m manifest.xml"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "office-toolbox": "^0.1.1",
     "path": "^0.12.7"
