@@ -2,14 +2,14 @@
   "tasks": [
     {
       "id": "1757428164517",
-      "ts": 1757429187968,
+      "ts": 1757429788123,
       "task": "i want instead this manifest doing i need it when i send email from outlook it sent this email again to web hook in server.js",
-      "tokensIn": 1109384,
-      "tokensOut": 16096,
+      "tokensIn": 1344132,
+      "tokensOut": 19261,
       "cacheWrites": 0,
-      "cacheReads": 1065082,
-      "totalCost": 0.6912901799999999,
-      "size": 245383,
+      "cacheReads": 1251127,
+      "totalCost": 0.9696827399999999,
+      "size": 288519,
       "shadowGitConfigWorkTree": "c:\\Users\\a.elhoseiny\\OneDrive - CEQUENS\\Desktop\\tests\\outlook\\outlookaddin"
     }
   ]

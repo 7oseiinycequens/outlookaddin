@@ -22,6 +22,19 @@
         button:hover {
             background-color: #005a9e;
         }
+        #result {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #dff6dd;
+            color: #107c10;
+        }
+        .error {
+            background-color: #fde7e9;
+            color: #a80000;
+        }
     </style>
     <script>
         Office.onReady(function() {
@@ -29,58 +42,65 @@
         });
 
         function sendToWebhook() {
-            const item = Office.context.mailbox.item;
-            
-            // Get email subject
-            item.subject.getAsync(function(resultSubject) {
-                if (resultSubject.status === Office.AsyncResultStatus.Succeeded) {
-                    const subject = resultSubject.value || "(No subject)";
-                    
-                    // Get email body
+            try {
+                const item = Office.context.mailbox.item;
+                const resultDiv = document.getElementById("result");
+                
+                // Create email data object with directly accessible properties
+                const emailData = {
+                    subject: item.subject || "(No subject)",
+                    from: Office.context.mailbox.userProfile.emailAddress,
+                    timestamp: new Date().toISOString()
+                };
+                
+                resultDiv.textContent = "Processing...";
+                resultDiv.className = "";
+                
+                // Get email body if available
+                if (item.body) {
                     item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
                         if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
-                            const body = resultBody.value || "(No body)";
-                            
-                            // Create email data object
-                            const emailData = {
-                                subject: subject,
-                                body: body,
-                                from: Office.context.mailbox.userProfile.emailAddress,
-                                timestamp: new Date().toISOString()
-                            };
-                            
-                            // Send to webhook
-                            fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify(emailData)
-                            })
-                            .then(function(response) {
-                                if (!response.ok) {
-                                    throw new Error('Network response was not ok');
-                                }
-                                return response.json();
-                            })
-                            .then(function(data) {
-                                document.getElementById("result").textContent = "Email sent to webhook successfully!";
-                                document.getElementById("result").style.color = "green";
-                            })
-                            .catch(function(error) {
-                                document.getElementById("result").textContent = "Error: " + error.message;
-                                document.getElementById("result").style.color = "red";
-                                console.error('Error sending to webhook:', error);
-                            });
+                            emailData.body = resultBody.value || "(No body)";
+                            sendToWebhookServer(emailData, resultDiv);
                         } else {
-                            document.getElementById("result").textContent = "Error getting email body";
-                            document.getElementById("result").style.color = "red";
+                            emailData.body = "(Could not retrieve body)";
+                            sendToWebhookServer(emailData, resultDiv);
                         }
                     });
                 } else {
-                    document.getElementById("result").textContent = "Error getting email subject";
-                    document.getElementById("result").style.color = "red";
+                    emailData.body = "(Body not available)";
+                    sendToWebhookServer(emailData, resultDiv);
                 }
+            } catch (error) {
+                console.error("Error in sendToWebhook:", error);
+                document.getElementById("result").textContent = "Error: " + error.message;
+                document.getElementById("result").className = "error";
+            }
+        }
+        
+        function sendToWebhookServer(emailData, resultDiv) {
+            // Send to webhook
+            fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                resultDiv.textContent = "Email sent to webhook successfully!";
+                resultDiv.className = "success";
+            })
+            .catch(function(error) {
+                resultDiv.textContent = "Error: " + error.message;
+                resultDiv.className = "error";
+                console.error('Error sending to webhook:', error);
             });
         }
     </script>
@@ -89,6 +109,6 @@
     <h2>CEQUENS Email Webhook</h2>
     <p>Send your email to the webhook server for processing.</p>
     <button id="sendButton">Send to Webhook</button>
-    <p id="result"></p>
+    <div id="result"></div>
 </body>
 </html>

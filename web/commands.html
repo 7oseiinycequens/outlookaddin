@@ -15,62 +15,65 @@
             try {
                 const item = Office.context.mailbox.item;
                 
-                // Get email subject
-                item.subject.getAsync(function(resultSubject) {
-                    if (resultSubject.status === Office.AsyncResultStatus.Succeeded) {
-                        const subject = resultSubject.value || "(No subject)";
-                        
-                        // Get email body
-                        item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
-                            if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
-                                const body = resultBody.value || "(No body)";
-                                
-                                // Create email data object
-                                const emailData = {
-                                    subject: subject,
-                                    body: body,
-                                    from: Office.context.mailbox.userProfile.emailAddress,
-                                    timestamp: new Date().toISOString()
-                                };
-                                
-                                // Send to webhook
-                                fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json'
-                                    },
-                                    body: JSON.stringify(emailData)
-                                })
-                                .then(function(response) {
-                                    if (!response.ok) {
-                                        throw new Error('Network response was not ok');
-                                    }
-                                    return response.json();
-                                })
-                                .then(function(data) {
-                                    console.log("Email sent to webhook successfully");
-                                    // Complete the event
-                                    event.completed();
-                                })
-                                .catch(function(error) {
-                                    console.error('Error sending to webhook:', error);
-                                    // Complete the event
-                                    event.completed();
-                                });
-                            } else {
-                                console.error("Error getting email body");
-                                event.completed();
-                            }
-                        });
-                    } else {
-                        console.error("Error getting email subject");
-                        event.completed();
-                    }
-                });
+                // Create email data object with directly accessible properties
+                const emailData = {
+                    subject: item.subject || "(No subject)",
+                    from: Office.context.mailbox.userProfile.emailAddress,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Get email body if available
+                if (item.body) {
+                    item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
+                        if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
+                            emailData.body = resultBody.value || "(No body)";
+                            sendToWebhookServer(emailData, event);
+                        } else {
+                            emailData.body = "(Could not retrieve body)";
+                            sendToWebhookServer(emailData, event);
+                        }
+                    });
+                } else {
+                    emailData.body = "(Body not available)";
+                    sendToWebhookServer(emailData, event);
+                }
             } catch (error) {
                 console.error("Error in sendEmailToWebhook:", error);
-                event.completed();
+                if (event && event.completed) {
+                    event.completed();
+                }
             }
+        }
+        
+        function sendToWebhookServer(emailData, event) {
+            // Send to webhook
+            fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(emailData)
+            })
+            .then(function(response) {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(function(data) {
+                console.log("Email sent to webhook successfully");
+                // Complete the event
+                if (event && event.completed) {
+                    event.completed();
+                }
+            })
+            .catch(function(error) {
+                console.error('Error sending to webhook:', error);
+                // Complete the event
+                if (event && event.completed) {
+                    event.completed();
+                }
+            });
         }
     </script>
 </head>
