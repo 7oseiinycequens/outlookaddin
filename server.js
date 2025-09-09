@@ -1,45 +1,17 @@
-// سيرفر بسيط باستخدام Express
+// Simple Express server for webhook only
 const express = require('express');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const path = require('path');
-const cors = require('cors');
-
-// Enable CORS for all routes
-app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Serve static files
+// Serve static files for assets (needed for icons)
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
+
+// Serve static files for web (needed for HTML files)
 app.use('/web', express.static(path.join(__dirname, 'web')));
-
-// Log all requests for debugging
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.url}`);
-  next();
-});
-
-// Routes for HTML files
-app.get('/web/index.html', (req, res) => {
-  console.log('Serving index.html');
-  res.sendFile(path.join(__dirname, 'web', 'index.html'));
-});
-
-app.get('/web/taskpane.html', (req, res) => {
-  console.log('Serving taskpane.html');
-  res.sendFile(path.join(__dirname, 'web', 'taskpane.html'));
-});
-
-app.get('/web/commands.html', (req, res) => {
-  console.log('Serving commands.html');
-  res.sendFile(path.join(__dirname, 'web', 'commands.html'));
-});
-
-app.get('/', (req, res) => {
-  res.send('server OK');
-});
 
 // Webhook endpoint to receive email data
 app.post('/webhook', (req, res) => {

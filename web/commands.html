@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <title>Commands</title>
+    <title>Webhook Commands</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
     <script>
         Office.onReady(function() {
@@ -15,27 +15,27 @@
             try {
                 const item = Office.context.mailbox.item;
                 
-                // Create email data object with directly accessible properties
+                // Create email data object
                 const emailData = {
                     subject: item.subject || "(No subject)",
                     from: Office.context.mailbox.userProfile.emailAddress,
                     timestamp: new Date().toISOString()
                 };
                 
-                // Get email body if available
+                // Get email body
                 if (item.body) {
                     item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
                         if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
                             emailData.body = resultBody.value || "(No body)";
-                            sendToWebhookServer(emailData, event);
+                            sendToWebhook(emailData, event);
                         } else {
                             emailData.body = "(Could not retrieve body)";
-                            sendToWebhookServer(emailData, event);
+                            sendToWebhook(emailData, event);
                         }
                     });
                 } else {
                     emailData.body = "(Body not available)";
-                    sendToWebhookServer(emailData, event);
+                    sendToWebhook(emailData, event);
                 }
             } catch (error) {
                 console.error("Error in sendEmailToWebhook:", error);
@@ -45,7 +45,7 @@
             }
         }
         
-        function sendToWebhookServer(emailData, event) {
+        function sendToWebhook(emailData, event) {
             // Send to webhook
             fetch('https://2160cc8fd8f2.ngrok-free.app/webhook', {
                 method: 'POST',
@@ -62,14 +62,12 @@
             })
             .then(function(data) {
                 console.log("Email sent to webhook successfully");
-                // Complete the event
                 if (event && event.completed) {
                     event.completed();
                 }
             })
             .catch(function(error) {
                 console.error('Error sending to webhook:', error);
-                // Complete the event
                 if (event && event.completed) {
                     event.completed();
                 }
@@ -78,6 +76,6 @@
     </script>
 </head>
 <body>
-    <!-- This file is used only for function execution -->
+    <!-- This file is used only for webhook function execution -->
 </body>
 </html>

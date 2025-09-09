@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Outlook Add-in - Compose</title>
+    <title>Email Webhook</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
     <style>
       body {
@@ -37,20 +37,17 @@
     </style>
   </head>
   <body>
-    <h2>CEQUENS Email Webhook</h2>
-    <p>Send your email to the webhook server for processing.</p>
+    <h2>Email Webhook</h2>
+    <p>Send to webhook</p>
     <button id="sendToWebhook">Send to Webhook</button>
     <div id="status" style="display: none;"></div>
 
     <script>
-      // Initialize Office JS
       Office.onReady(() => {
-        // Add click event to the button
-        document.getElementById("sendToWebhook").onclick = sendEmailToWebhookFromTaskpane;
+        document.getElementById("sendToWebhook").onclick = sendToWebhook;
       });
 
-      // Function to send email to webhook from taskpane
-      function sendEmailToWebhookFromTaskpane() {
+      function sendToWebhook() {
         const item = Office.context.mailbox.item;
         const statusDiv = document.getElementById("status");
         
@@ -95,13 +92,13 @@
                   })
                   .then(data => {
                     // Show success message
-                    statusDiv.textContent = "Email successfully sent to webhook!";
+                    statusDiv.textContent = "Email sent to webhook successfully!";
                     statusDiv.className = "success";
                     statusDiv.style.display = "block";
                   })
                   .catch(error => {
                     // Show error message
-                    statusDiv.textContent = "Error sending to webhook: " + error.message;
+                    statusDiv.textContent = "Error: " + error.message;
                     statusDiv.className = "error";
                     statusDiv.style.display = "block";
                     console.error('Error:', error);
@@ -109,14 +106,14 @@
                 });
               } else {
                 // Handle error getting body
-                statusDiv.textContent = "Error getting email body: " + resultBody.error.message;
+                statusDiv.textContent = "Error getting body: " + resultBody.error.message;
                 statusDiv.className = "error";
                 statusDiv.style.display = "block";
               }
             });
           } else {
             // Handle error getting subject
-            statusDiv.textContent = "Error getting email subject: " + resultSubject.error.message;
+            statusDiv.textContent = "Error getting subject: " + resultSubject.error.message;
             statusDiv.className = "error";
             statusDiv.style.display = "block";
           }

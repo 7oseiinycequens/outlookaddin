@@ -7,19 +7,17 @@ Platform: win32
 Architecture: x64
 Node Version: v22.17.0
 Total Memory: 16GB
-Free Memory: 4GB
+Free Memory: 6GB
 CPU Cores: 12
 
-Current Time: 9/9/2025, 5:29:24 PM (Africa/Cairo, UTC+3:00)
+Current Time: 9/9/2025, 7:01:24 PM (Africa/Cairo, UTC+3:00)
 
 # EDITOR STATE
 
 Visible Files:
-  manifest.xml
+  server.js
 
 Open Tabs:
-  manifest.xml
-  web\taskpane.html
   server.js
 
 # WORKSPACE SUMMARY
@@ -42,5 +40,6 @@ Files:
   assets/icon-64.png
   assets/icon-80.png
   assets/logo-filled.png
+  web/commands.html
   web/index.html
   web/taskpane.html

@@ -11,6 +11,18 @@
       "totalCost": 0.9696827399999999,
       "size": 288519,
       "shadowGitConfigWorkTree": "c:\\Users\\a.elhoseiny\\OneDrive - CEQUENS\\Desktop\\tests\\outlook\\outlookaddin"
+    },
+    {
+      "id": "1757433684949",
+      "ts": 1757434261902,
+      "task": "remove any thing else the webhook and send to webhook",
+      "tokensIn": 406747,
+      "tokensOut": 12861,
+      "cacheWrites": 0,
+      "cacheReads": 373469,
+      "totalCost": 0.41556864,
+      "size": 198269,
+      "shadowGitConfigWorkTree": "c:\\Users\\a.elhoseiny\\OneDrive - CEQUENS\\Desktop\\tests\\outlook\\outlookaddin"
     }
   ]
 }

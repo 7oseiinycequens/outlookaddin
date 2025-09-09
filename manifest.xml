@@ -11,8 +11,8 @@
   <Version>1.0.0.0</Version>
   <ProviderName>CEQUENS</ProviderName>
   <DefaultLocale>en-US</DefaultLocale>
-  <DisplayName DefaultValue="CEQUENS Email Webhook" />
-  <Description DefaultValue="Send emails to webhook for processing"/>
+  <DisplayName DefaultValue="Email Webhook" />
+  <Description DefaultValue="Send emails to webhook"/>
 
   <IconUrl DefaultValue="https://2160cc8fd8f2.ngrok-free.app/assets/icon-64.png" />
   <HighResolutionIconUrl DefaultValue="https://2160cc8fd8f2.ngrok-free.app/assets/icon-128.png"/>
@@ -36,14 +36,14 @@
     <Form xsi:type="ItemRead">
       <DesktopSettings>
         <SourceLocation DefaultValue="https://2160cc8fd8f2.ngrok-free.app/web/index.html"/>
-        <RequestedHeight>250</RequestedHeight>
+        <RequestedHeight>200</RequestedHeight>
       </DesktopSettings>
     </Form>
   </FormSettings>
 
   <Permissions>ReadWriteItem</Permissions>
   <Rule xsi:type="ItemIs" ItemType="Message" FormType="Read" />
-  <DisableEntityHighlighting>false</DisableEntityHighlighting>
+  <DisableEntityHighlighting>true</DisableEntityHighlighting>
 
   <VersionOverrides xmlns="http://schemas.microsoft.com/office/mailappversionoverrides" xsi:type="VersionOverridesV1_0">
     <Requirements>
@@ -61,21 +61,6 @@
             <OfficeTab id="TabDefault">
               <Group id="msgReadGroup">
                 <Label resid="GroupLabel" />
-                <Control xsi:type="Button" id="msgReadOpenPaneButton">
-                  <Label resid="TaskpaneButton.Label" />
-                  <Supertip>
-                    <Title resid="TaskpaneButton.Label" />
-                    <Description resid="TaskpaneButton.Tooltip" />
-                  </Supertip>
-                  <Icon>
-                    <bt:Image size="16" resid="Icon.16x16" />
-                    <bt:Image size="32" resid="Icon.32x32" />
-                    <bt:Image size="80" resid="Icon.80x80" />
-                  </Icon>
-                  <Action xsi:type="ShowTaskpane">
-                    <SourceLocation resid="Taskpane.Url" />
-                  </Action>
-                </Control>
                 <Control xsi:type="Button" id="ActionButton">
                   <Label resid="ActionButton.Label" />
                   <Supertip>
@@ -109,12 +94,10 @@
         <bt:Url id="Taskpane.Url" DefaultValue="https://2160cc8fd8f2.ngrok-free.app/web/index.html" />
       </bt:Urls>
       <bt:ShortStrings>
-        <bt:String id="GroupLabel" DefaultValue="CEQUENS Add-in"/>
-        <bt:String id="TaskpaneButton.Label" DefaultValue="Show Taskpane"/>
+        <bt:String id="GroupLabel" DefaultValue="Webhook"/>
         <bt:String id="ActionButton.Label" DefaultValue="Send to Webhook"/>
       </bt:ShortStrings>
       <bt:LongStrings>
-        <bt:String id="TaskpaneButton.Tooltip" DefaultValue="Opens a pane displaying all available properties."/>
         <bt:String id="ActionButton.Tooltip" DefaultValue="Sends the email to the webhook server."/>
       </bt:LongStrings>
     </Resources>

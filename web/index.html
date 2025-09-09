@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <title>CEQUENS Email Webhook</title>
+    <title>Email Webhook</title>
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js" type="text/javascript"></script>
     <style>
         body {
@@ -46,17 +46,17 @@
                 const item = Office.context.mailbox.item;
                 const resultDiv = document.getElementById("result");
                 
-                // Create email data object with directly accessible properties
+                // Create email data object
                 const emailData = {
                     subject: item.subject || "(No subject)",
                     from: Office.context.mailbox.userProfile.emailAddress,
                     timestamp: new Date().toISOString()
                 };
                 
-                resultDiv.textContent = "Processing...";
+                resultDiv.textContent = "Sending to webhook...";
                 resultDiv.className = "";
                 
-                // Get email body if available
+                // Get email body
                 if (item.body) {
                     item.body.getAsync(Office.CoercionType.Text, function(resultBody) {
                         if (resultBody.status === Office.AsyncResultStatus.Succeeded) {
@@ -106,8 +106,8 @@
     </script>
 </head>
 <body>
-    <h2>CEQUENS Email Webhook</h2>
-    <p>Send your email to the webhook server for processing.</p>
+    <h2>Email Webhook</h2>
+    <p>Send email to webhook</p>
     <button id="sendButton">Send to Webhook</button>
     <div id="result"></div>
 </body>
